@@ -31,7 +31,7 @@ const Navbar = ({handleLogout, isLoggedIn, isAdmin, name}) => (
                                         <i className='dropdown icon' />
                                         <span className='text'>Admin</span>
                                         <Dropdown.Menu>
-                                            <Dropdown.Item>Members</Dropdown.Item>
+                                            <Dropdown.Item><Link to='/admin/member' style={{color: 'black'}}>Members</Link></Dropdown.Item>
                                             <Dropdown.Item>Goal</Dropdown.Item>
                                             <Dropdown.Item>Achievement</Dropdown.Item>
                                         </Dropdown.Menu>

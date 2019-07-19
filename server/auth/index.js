@@ -3,7 +3,7 @@ module.exports = router
 
 router.post('/login', async (req, res, next)=>{
     try {
-        const user = {id: 1, username: 'minkyang'}
+        const user = {id: req.body.id, name: req.body.name, isAdmin: req.body.admin}
         req.login(user, err => (err ? next(err) : res.json(user)))
     } catch(err) {
         next(err)

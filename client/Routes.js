@@ -12,10 +12,16 @@ class Routes extends Component {
     }
 
     render() {
+        const {isLoggedIn} = this.props
+
         return (
             <Switch>
                 <Route path='/login' component={Login}/>
-                <Route path='/home' component={Home}/>
+                {isLoggedIn && (
+                    <Switch>
+                        <Route path='/home' component={Home}/>
+                    </Switch>
+                )}
                 <Route component={Login}/>
             </Switch>
         )
@@ -39,5 +45,6 @@ const mapDispatch = dispatch => {
 export default withRouter(connect(mapState, mapDispatch)(Routes))
 
 Routes.propTypes = {
+    loadInitialData: PropTpyes.func.isRequired,
     isLoggedIn: PropTpyes.bool.isRequired
 }

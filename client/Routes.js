@@ -5,6 +5,7 @@ import PropTpyes from 'prop-types'
 import {me} from './store'
 
 import {Login, Home} from './component'
+import {AdminMember} from './component/admin'
 
 class Routes extends Component {
     componentDidMount() {
@@ -12,7 +13,7 @@ class Routes extends Component {
     }
 
     render() {
-        const {isLoggedIn} = this.props
+        const {isLoggedIn, isAdmin} = this.props
 
         return (
             <Switch>
@@ -20,6 +21,12 @@ class Routes extends Component {
                 {isLoggedIn && (
                     <Switch>
                         <Route path='/home' component={Home}/>
+                        {isAdmin && (
+                            <Switch>
+                                <Route path='/admin/member' component={AdminMember}/>
+                            </Switch>
+                        )}
+                        <Route component={Home}/>
                     </Switch>
                 )}
                 <Route component={Login}/>
@@ -30,7 +37,8 @@ class Routes extends Component {
 
 const mapState = state => {
     return {
-        isLoggedIn: !!state.user.id
+        isLoggedIn: !!state.user.name,
+        isAdmin: !!state.user.isAdmin
     }
 }
 
@@ -46,5 +54,6 @@ export default withRouter(connect(mapState, mapDispatch)(Routes))
 
 Routes.propTypes = {
     loadInitialData: PropTpyes.func.isRequired,
-    isLoggedIn: PropTpyes.bool.isRequired
+    isLoggedIn: PropTpyes.bool.isRequired,
+    isAdmin: PropTpyes.bool.isRequired
 }

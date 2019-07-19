@@ -7,11 +7,10 @@ const passport = require('passport');
 const app = express();
 const PORT = process.env.PORT || 3000;
 
-passport.serializeUser((user, done) => done(null, user.id))
+passport.serializeUser((user, done) => done(null, user))
 
-passport.deserializeUser(async (id, done) => {
+passport.deserializeUser(async (user, done) => {
     try {
-        const user = {id: 1, username: 'minkyang'}
         done(null, user)
     } catch (err) {
         done(err)

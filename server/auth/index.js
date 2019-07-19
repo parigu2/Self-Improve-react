@@ -10,6 +10,7 @@ router.post('/login', async (req, res, next)=>{
     }
 })
 
+
 router.post('/signup', async (req, res, next) => {
     try {
         req.login(req.body, err => (err ? next(err) : res.json(user)))

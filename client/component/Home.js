@@ -1,31 +1,43 @@
 import React, {Component} from 'react'
+import {Route, Switch, Link} from 'react-router-dom'
 import {connect} from 'react-redux'
-import {getSingleGoalTarget} from '../store'
+import {Menu, Label} from 'semantic-ui-react'
+import Self from './self'
+import Group from './group'
 
 class Home extends Component {
+    state = {activeItem: ''}
+
+    handleItemClick = (e, {name}) => {
+        this.props.history.push(`/${name}`)
+        this.setState({activeItem: name})
+    }
+
     componentDidMount() {
-        this.props.getGoalTarget(this.props.id)
+        this.setState({activeItem: this.props.name})
     }
 
     render() {
-        const {goal} = this.props
+        const {name} = this.props
+        const {activeItem} = this.state
         return (
             <div>
                 <h2>Main Page</h2>
-                <h3>Your Goal</h3>
-                {goal && goal.map(list=>{
-                    return (
-                        <div key={list.id}>
-                            <p>{list.goal}</p>
-                            <p>{list.target}</p>
-                            {list.timesheet.map(time=>{
-                                return (
-                                    <p key={time.id}>score: {time.score}</p>
-                                )
-                            })}
-                        </div>
-                    )
-                })}
+                <Menu vertical>
+                    <Menu.Item name={name} active={activeItem === name} onClick={this.handleItemClick}>
+                        <Label color='teal'>1</Label>
+                        {name}
+                    </Menu.Item>
+                    <Menu.Item name='group' active={activeItem === 'group'} onClick={this.handleItemClick}>
+                        <Label>51</Label>
+                        Group
+                    </Menu.Item>
+                </Menu>
+                <Switch>
+                    <Route path="/home" component={Self}/>
+                    <Route path="/group" component={Group}/>
+                    <Route component={Self}/>
+                </Switch>
             </div>
         )
     }
@@ -33,15 +45,8 @@ class Home extends Component {
 
 const mapState = state => {
     return {
-        id: state.user.id,
-        goal: state.goal.goal
+        name: state.user.name
     }
 }
 
-const mapDispatch = dispatch => {
-    return {
-        getGoalTarget: id => dispatch(getSingleGoalTarget(id))
-    }
-}
-
-export default connect(mapState, mapDispatch)(Home)
+export default connect(mapState)(Home)

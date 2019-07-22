@@ -32,7 +32,7 @@ const Navbar = ({handleLogout, isLoggedIn, isAdmin, name}) => (
                                         <span className='text'>Admin</span>
                                         <Dropdown.Menu>
                                             <Dropdown.Item><Link to='/admin/member' style={{color: 'black'}}>Members</Link></Dropdown.Item>
-                                            <Dropdown.Item>Goal</Dropdown.Item>
+                                            <Dropdown.Item><Link to='/admin/goal' style={{color: 'black'}}>Goal</Link></Dropdown.Item>
                                             <Dropdown.Item>Achievement</Dropdown.Item>
                                         </Dropdown.Menu>
                                     </Dropdown.Item>

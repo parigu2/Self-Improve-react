@@ -5,7 +5,7 @@ import PropTpyes from 'prop-types'
 import {me} from './store'
 
 import {Login, Home} from './component'
-import {AdminMember} from './component/admin'
+import {AdminMember, AdminGoal} from './component/admin'
 
 class Routes extends Component {
     componentDidMount() {
@@ -24,6 +24,7 @@ class Routes extends Component {
                         {isAdmin && (
                             <Switch>
                                 <Route path='/admin/member' component={AdminMember}/>
+                                <Route path='/admin/goal' component={AdminGoal}/>
                             </Switch>
                         )}
                         <Route component={Home}/>

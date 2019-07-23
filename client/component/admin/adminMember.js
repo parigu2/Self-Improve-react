@@ -31,7 +31,7 @@ class AdminMember extends Component {
                                     <Table.Row key={member.id}>
                                         <Table.Cell>{member.name}</Table.Cell>
                                         <Table.Cell>{member.password}</Table.Cell>
-                                        <Table.Cell>{member.admin ? <Icon name='checkmark'/>: <Icon name='x'/>}</Table.Cell>
+                                        <Table.Cell>{member.admin ? <Icon color='green' name='checkmark' size='large'/>: <Icon name='x'/>}</Table.Cell>
                                     </Table.Row>
                                 )})
                             )}

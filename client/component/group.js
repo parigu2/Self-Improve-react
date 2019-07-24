@@ -1,23 +1,40 @@
 import React, {Component} from 'react'
 import {connect} from 'react-redux'
 import {getAllGoalsTargets} from '../store'
+import {Grid, Table, Header} from 'semantic-ui-react'
 
 class Group extends Component {
     constructor() {
         super()
         this.state = {
-            result: undefined
+            result: undefined,
+            weeks: [],
+            week: 1
         }
         this.presentNumber = this.presentNumber.bind(this)
         this.weeklyScoreCalculator = this.weeklyScoreCalculator.bind(this)
         this.totalScoreCalculator = this.totalScoreCalculator.bind(this)
         this.percentageCalculator = this.percentageCalculator.bind(this)
+        this.totalPercent = this.totalPercent.bind(this)
+        this.notice = this.notice.bind(this)
+        this.noticeHeader = this.noticeHeader.bind(this)
+        this.maxLimit = this.maxLimit.bind(this)
     }
 
     componentDidMount() {
         this.props.getAllGoal().then(()=>{
-            this.presentNumber()
+            this.presentNumber();
+            this.totalPercent();
         });
+        const between = new Date('2019-09-22').valueOf() - new Date('2019-07-15').valueOf()+1
+        const week = Math.ceil(between/604800000)
+        const result = [];
+        for (let i = 1; i < week+1; i++) {
+            result.push(i)
+        }
+        const betweenWeek = new Date('2019-07-29').valueOf() - new Date('2019-07-15').valueOf()+1
+        const weekWeek = Math.ceil(betweenWeek/604800000)
+        this.setState({weeks: result, week: weekWeek})
     }
 
     presentNumber() {
@@ -28,9 +45,10 @@ class Group extends Component {
             let score = 0
             let percent = 0
             totalScore.forEach(ele=>{
-                score += parseInt(ele.dataset.score),
-                percent += parseInt(ele.dataset.percent)
+                score += parseFloat(ele.dataset.score),
+                percent += parseFloat(ele.dataset.percent)
             })
+            percent = percent/this.state.week/user.details.length
             percent = percent.toFixed(2)
             result[name] = {score, percent}
         })
@@ -50,7 +68,7 @@ class Group extends Component {
         return result;
     }
 
-    totalScoreCalculator(timesheet, start='2019-07-15', to=new Date()) {
+    totalScoreCalculator(timesheet, start='2019-07-15', to=new Date('2019-07-30')) {
         return timesheet.reduce((first, current)=>{
             const from = new Date(start).valueOf()
             const end = new Date(to).valueOf()
@@ -62,41 +80,102 @@ class Group extends Component {
         }, 0)
     }
 
-    percentageCalculator(score, target, start='2019-07-15', to=new Date()) {
+    percentageCalculator(score, target, start='2019-07-15', to=new Date('2019-07-30')) {
         const between = new Date(to).valueOf() - new Date(start).valueOf()
         const week = Math.ceil(between/604800000)
-        return ((score / target) / week * 100).toFixed(2)
+        return (this.maxLimit(score * 100/target)/week).toFixed(2)
+    }
+
+    totalPercent() {
+        this.props.goals.map(user=>{
+            let totalPercent = document.querySelectorAll(`#${user.name}byGoal`)
+            if (totalPercent.length < 1) totalPercent = [];
+            let percent = 0;
+            totalPercent.forEach(ele=>{
+                percent += parseFloat(ele.dataset.percent)
+            })
+            document.querySelector(`#${user.name}result`).innerHTML = (percent/(totalPercent.length || 1)).toFixed(2) + '%'
+        })
+    }
+
+    notice(score, target) {
+        const rate = score/target
+        if (rate >= 0.95) {
+            return 'positive'
+        } else if(rate >= 0.75 && rate < 0.85) {
+            return 'warning'
+        } else {
+            return 'negative'
+        }
+    }
+
+    noticeHeader(condition) {
+        if(condition === 'positive') {
+            return 'green'
+        } else if (condition === 'warning') {
+            return 'yellow'
+        } else if (condition === 'negative')
+            return 'red'
+    }
+
+    maxLimit(number) {
+        return number > 120 ? 120 : number
     }
 
     render() {
         const {goals} = this.props
-
+        const {weeks, result} = this.state
         return (
             <div>
-                <h3>Group Goals</h3>
-                {goals && goals.map(user=>{
-                    return (
-                        <div key={user.id}>
-                            <p>{user.name}</p>
-                            {user.details.map(list=>{
+                <Header as='h1'>Members</Header>
+
+                <Grid.Column width={16}>
+                    <Table celled structured>
+                        <Table.Header>
+                            <Table.Row>
+                                <Table.HeaderCell rowSpan='2'>Goal</Table.HeaderCell>
+                                <Table.HeaderCell rowSpan='2'>Target</Table.HeaderCell>
+                                <Table.HeaderCell colSpan={weeks.length}>Week</Table.HeaderCell>
+                                <Table.HeaderCell rowSpan='2'>Score</Table.HeaderCell>
+                                <Table.HeaderCell rowSpan='2'>Percent</Table.HeaderCell>
+                            </Table.Row>
+                            <Table.Row>
+                                {weeks.map(week=>{return (<Table.HeaderCell key={week}>{week}</Table.HeaderCell>)})}
+                            </Table.Row>
+                        </Table.Header>
+
+                            {goals && goals.map(user=>{
                                 return (
-                                    <div key={list.id}>
-                                        <p>{list.goal}</p>
-                                        <p>{list.target}</p>
-                                        {Object.keys(this.weeklyScoreCalculator(list.timesheet)).map(week=>{
-                                            return (<p key={week}>week: {week}, score: {this.weeklyScoreCalculator(list.timesheet)[week]}</p>)
+                                    <Table.Body key={user.id}>
+                                        {user.details.map(list=>{
+                                            return (
+                                                <Table.Row key={list.id}>
+                                                    <Table.Cell>{list.goal}</Table.Cell>
+                                                    <Table.Cell textAlign='right'>{list.target}</Table.Cell>
+                                                        {weeks.map(week=>{
+                                                            if(week <= this.state.week) {
+                                                                return(<Table.Cell key={week} selectable textAlign='center' className={this.notice(this.weeklyScoreCalculator(list.timesheet)[week], list.target)} id={`${user.name}calculate`} data-score={this.weeklyScoreCalculator(list.timesheet)[week] || 0} data-percent={this.maxLimit((this.weeklyScoreCalculator(list.timesheet)[week]*100/list.target) || 0)}>{this.weeklyScoreCalculator(list.timesheet)[week] || 0} / {(this.maxLimit((this.weeklyScoreCalculator(list.timesheet)[week]*100/list.target))|| 0).toFixed(2)}%</Table.Cell>)
+                                                            } else {
+                                                                return(<Table.Cell key={week}>-</Table.Cell>)
+                                                            }
+                                                        })}
+                                                    <Table.Cell textAlign='center'>{this.totalScoreCalculator(list.timesheet)}</Table.Cell>
+                                                    <Table.Cell id={`${user.name}byGoal`} textAlign='center' data-percent={this.percentageCalculator(this.totalScoreCalculator(list.timesheet), list.target)}>{this.percentageCalculator(this.totalScoreCalculator(list.timesheet), list.target)+'%'}</Table.Cell>
+                                                </Table.Row>
+                                            )
                                         })}
-                                        <p id={`${user.name}calculate`} data-score={this.totalScoreCalculator(list.timesheet)} data-percent={this.percentageCalculator(this.totalScoreCalculator(list.timesheet), list.target)}>score {this.totalScoreCalculator(list.timesheet)} and percent {this.percentageCalculator(this.totalScoreCalculator(list.timesheet), list.target)+'%'}</p>
-                                    </div>
-                                )    
+                                        {result && (
+                                            <Table.Row>
+                                                <Table.Cell active colSpan={weeks.length+2} textAlign='right'><Header as='h3' style={{margin: '0.1em'}}>{user.name}</Header></Table.Cell>
+                                                <Table.Cell textAlign='center'><Header as='h3' style={{margin: '0.1em'}}>{result[user.name].score}</Header></Table.Cell>
+                                                <Table.Cell className={this.notice(result[user.name].percent, 100)} textAlign='center'><Header as='h3' style={{margin: '0.1em'}} className={this.noticeHeader(this.notice(result[user.name].percent, 100))} id={`${user.name}result`}></Header></Table.Cell>
+                                            </Table.Row>
+                                        )}
+                                    </Table.Body>
+                                )
                             })}
-                            <h3>Total {user.name}:</h3>
-                            {this.state.result && (
-                               <p>score: {this.state.result[user.name].score} percent: {this.state.result[user.name].percent + '%'}</p>
-                            )}
-                        </div>
-                    )
-                })}
+                    </Table>
+                </Grid.Column>
             </div>
         )
     }

@@ -21,10 +21,9 @@ const Navbar = ({handleLogout, isLoggedIn, isAdmin, name}) => (
 
                     <Dropdown item simple text='Dropdown'>
                         <Dropdown.Menu>
-                            <Dropdown.Item>List Item</Dropdown.Item>
-                            <Dropdown.Item>List Item</Dropdown.Item>
+                            <Dropdown.Item as={Link} to='/home'>{name}</Dropdown.Item>
+                            <Dropdown.Item as={Link} to='/group'>Group</Dropdown.Item>
                             <Dropdown.Divider />
-                            <Dropdown.Header>Header Item</Dropdown.Header>
                             {
                                 isAdmin ? (
                                     <Dropdown.Item>
@@ -37,7 +36,7 @@ const Navbar = ({handleLogout, isLoggedIn, isAdmin, name}) => (
                                         </Dropdown.Menu>
                                     </Dropdown.Item>
                                 ) : (
-                                    <Dropdown.Item>List Item</Dropdown.Item>
+                                    <Dropdown.Item>Admin</Dropdown.Item>
                                 )
                             }
                         </Dropdown.Menu>

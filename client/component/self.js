@@ -1,7 +1,7 @@
 import React, {Component} from 'react'
 import {connect} from 'react-redux'
 import {getSingleGoalTarget} from '../store'
-import {Grid, Table, Icon, Header} from 'semantic-ui-react'
+import {Grid, Table, Header} from 'semantic-ui-react'
 
 class Self extends Component {
     constructor() {
@@ -46,7 +46,7 @@ class Self extends Component {
             score += parseFloat(ele.dataset.score),
             percent += parseFloat(ele.dataset.percent)
         })
-        percent = percent/this.state.weeks.length/this.props.goal.length;
+        percent = percent/this.state.week/this.props.goal.length;
         percent = percent.toFixed(2)
         this.setState({score, percent})
     }
@@ -79,7 +79,7 @@ class Self extends Component {
     percentageCalculator(score, target, start='2019-07-15', to=new Date('2019-07-30')) {
         const between = new Date(to).valueOf() - new Date(start).valueOf()
         const week = Math.ceil(between/604800000)
-        return this.maxLimit(((score / target) / week * 100).toFixed(2))
+        return (this.maxLimit(score * 100/target)/week).toFixed(2)
     }
 
     totalPercent() {
@@ -118,7 +118,7 @@ class Self extends Component {
 
     render() {
         const {goal, name} = this.props
-        const weeks = this.state.weeks
+        const {weeks, score, percent} = this.state
         return (
             <div>
                 <Header as='h1'>Your Goal! {name}</Header>
@@ -160,8 +160,8 @@ class Self extends Component {
                         <Table.Footer>
                             <Table.Row>
                                 <Table.HeaderCell colSpan={weeks.length+2}><Header as='h3'>Total</Header></Table.HeaderCell>
-                                <Table.HeaderCell><Header as='h3'>{this.state.score}</Header></Table.HeaderCell>
-                                <Table.HeaderCell className={this.notice(this.state.percent, 100)}><Header as='h3' className={this.noticeHeader(this.notice(this.state.percent, 100))} id="result"></Header></Table.HeaderCell>
+                                <Table.HeaderCell><Header as='h3'>{score}</Header></Table.HeaderCell>
+                                <Table.HeaderCell className={this.notice(percent, 100)}><Header as='h3' className={this.noticeHeader(this.notice(percent, 100))} id="result"></Header></Table.HeaderCell>
                             </Table.Row>
                         </Table.Footer>
                     </Table>

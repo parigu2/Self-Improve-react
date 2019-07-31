@@ -22,7 +22,7 @@ export const auth = (name, password) => async dispatch => {
     let res
     let data
     try {
-        data = await axios.post('http://localhost:9999/checkUser', {name, password});
+        data = await axios.post('https://selfimprovement.cfapps.io/checkUser', {name, password});
     } catch (authError) {
         return dispatch(getUser({error: authError}))
     }

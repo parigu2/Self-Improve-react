@@ -10,7 +10,7 @@ const getAllGoals = goals => ({type: GET_ALL_USER_GOAL_TARGET, goals})
 
 export const getSingleGoalTarget = id => async dispatch => {
     try {
-        const res = await axios.get(`http://localhost:9999/join/user/${id}`)
+        const res = await axios.get(`https://selfimprovement.cfapps.io/join/user/${id}`)
         return dispatch(getSingleGoal(res.data))
     } catch (err) {
         console.error(err)
@@ -19,7 +19,7 @@ export const getSingleGoalTarget = id => async dispatch => {
 
 export const getAllGoalsTargets = () => async dispatch => {
     try {
-        const res = await axios.get('http://localhost:9999/join/all')
+        const res = await axios.get('https://selfimprovement.cfapps.io/join/all')
         return dispatch(getAllGoals(res.data))
     } catch(err) {
         console.error(err)

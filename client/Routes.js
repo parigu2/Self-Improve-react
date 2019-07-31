@@ -4,7 +4,7 @@ import {withRouter, Route, Switch} from 'react-router-dom'
 import PropTpyes from 'prop-types'
 import {me} from './store'
 
-import {Login, Home} from './component'
+import {Login, Home, Group} from './component'
 import {AdminMember, AdminGoal} from './component/admin'
 
 class Routes extends Component {
